@@ -1,0 +1,10 @@
+services:
+  alpha-engine:
+    build: .
+    container_name: alpha-engine
+    environment:
+      APP_ENV: local
+      LOG_LEVEL: INFO
+      SYMBOL: BTCUSDT
+      MIN_SPREAD_PERCENT: "0.20"
+    restart: unless-stopped
