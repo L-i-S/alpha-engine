@@ -3,3 +3,4 @@ websockets==12.0
 python-dotenv==1.0.1
 pydantic==2.7.4
 pydantic-settings==2.3.4
+prometheus-client==0.22.1

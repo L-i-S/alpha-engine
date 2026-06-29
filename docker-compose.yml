@@ -7,4 +7,8 @@ services:
       LOG_LEVEL: INFO
       SYMBOL: BTCUSDT
       MIN_SPREAD_PERCENT: "0.20"
+      HTTP_HOST: 0.0.0.0
+      HTTP_PORT: "8080"
+    ports:
+      - "8080:8080"
     restart: unless-stopped

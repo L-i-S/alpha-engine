@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     symbol: str = "BTCUSDT"
     min_spread_percent: float = 0.20
 
+    http_host: str = "0.0.0.0"
+    http_port: int = 8080
+
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
 

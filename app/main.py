@@ -1,14 +1,41 @@
 import asyncio
 import logging
 
+from aiohttp import web
+
 from app.config.settings import settings
 from app.core.logging import setup_logging
 from app.exchanges.binance import BinanceExchange
 from app.exchanges.bybit import BybitExchange
+from app.services.http_server import create_app
 from app.services.market_data import MarketDataService
 from app.strategies.arbitrage import ArbitrageStrategy
 
 logger = logging.getLogger(__name__)
+
+
+async def start_http_server(market: MarketDataService) -> None:
+    app = create_app(market)
+
+    runner = web.AppRunner(app)
+    await runner.setup()
+
+    site = web.TCPSite(
+        runner,
+        host=settings.http_host,
+        port=settings.http_port,
+    )
+
+    await site.start()
+
+    logger.info(
+        "HTTP server started on %s:%s",
+        settings.http_host,
+        settings.http_port,
+    )
+
+    while True:
+        await asyncio.sleep(3600)
 
 
 async def check_opportunities(market: MarketDataService) -> None:
@@ -43,7 +70,8 @@ async def check_opportunities(market: MarketDataService) -> None:
             logger.info(opportunity)
         else:
             logger.info(
-                "No opportunity above threshold: %s%%", settings.min_spread_percent
+                "No opportunity above threshold: %s%%",
+                settings.min_spread_percent,
             )
 
 
@@ -65,8 +93,12 @@ async def main() -> None:
     await asyncio.gather(
         market.start(),
         check_opportunities(market),
+        start_http_server(market),
     )
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Alpha Engine stopped")
